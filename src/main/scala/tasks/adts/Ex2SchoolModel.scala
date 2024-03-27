@@ -6,6 +6,7 @@ import u03.Optionals.*
 import u03.Optionals.Optional.Just
 import u03.Optionals.Optional.Empty
 import u02.AlgebraicDataTypes.Person
+import u03.Sequences.Sequence.map
 
 /*  Exercise 2:
  *  Implement the below trait, and write a meaningful test.
@@ -57,5 +58,9 @@ object SchoolModel:
 
       def nameOfTeacher(teacher: Teacher): String = teacher.name
       def nameOfCourse(course: Course): String = course.name
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
-      def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
+      def setTeacherToCourse(teacher: Teacher, course: Course): School =
+        school match
+          case School(t, c) => School(t, Cons(course, c))
+
+      def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
+        teacher.courses

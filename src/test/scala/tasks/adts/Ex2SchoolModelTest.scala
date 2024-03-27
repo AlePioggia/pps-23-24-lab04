@@ -41,3 +41,10 @@ class Ex2SchoolModelTest:
       Just(Course("biology")),
       newSchool.courseByName("biology")
     )
+
+  @Test def testSetTeacherToCourse() =
+    val newSchool = school.setTeacherToCourse(
+      Teacher("teacher", Sequence.Nil()),
+      Course("biology")
+    )
+    assertEquals(newSchool.courses.productElement(0), (Course("biology")))
