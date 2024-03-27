@@ -13,6 +13,7 @@ import Ex3Stacks.StackImpl
 import Ex3Stacks.*
 import Ex3Stacks.StackImpl.push
 import Ex3Stacks.StackImpl.pop
+import Ex3Stacks.StackImpl.asSequence
 
 class Ex3StackTests:
   @Test def testPush() =
