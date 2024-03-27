@@ -5,6 +5,9 @@ import org.junit.Assert.*
 import tasks.adts.SchoolModel.SchoolImpl
 import u03.Sequences.Sequence
 import tasks.adts.SchoolModel.SchoolImpl.Teacher
+import u03.Optionals.Optional.Just
+import u03.Optionals.Optional.Empty
+import tasks.adts.SchoolModel.SchoolImpl.Course
 
 class Ex2SchoolModelTest:
   val SchoolModel = SchoolImpl
@@ -23,4 +26,18 @@ class Ex2SchoolModelTest:
     assertEquals(
       Sequence.Cons(SchoolModel.Course("biology"), Sequence.Nil()),
       newSchool.courses
+    )
+
+  @Test def testTeacherByName() =
+    val newSchool = school.addTeacher("teacher")
+    assertEquals(
+      Just(Teacher("teacher", Sequence.Nil())),
+      newSchool.teacherByName("teacher")
+    )
+
+  @Test def testCourseByName() =
+    val newSchool = school.addCourse("biology")
+    assertEquals(
+      Just(Course("biology")),
+      newSchool.courseByName("biology")
     )

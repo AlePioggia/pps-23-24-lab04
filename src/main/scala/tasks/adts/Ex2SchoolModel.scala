@@ -3,6 +3,8 @@ import u03.Sequences.*
 import u03.Sequences.Sequence.Cons
 import u03.Sequences.Sequence.Nil
 import u03.Optionals.*
+import u03.Optionals.Optional.Just
+import u03.Optionals.Optional.Empty
 import u02.AlgebraicDataTypes.Person
 
 /*  Exercise 2:
@@ -26,7 +28,7 @@ object SchoolModel:
       def teacherByName(name: String): Optional[Teacher]
       def courseByName(name: String): Optional[Course]
       def nameOfTeacher(teacher: Teacher): String
-      def nameOfCourse(teacher: Teacher): String
+      def nameOfCourse(course: Course): String
       def setTeacherToCourse(teacher: Teacher, course: Course): School
       def coursesOfATeacher(teacher: Teacher): Sequence[Course]
 
@@ -41,9 +43,19 @@ object SchoolModel:
       def addCourse(name: String): School = school match
         case School(t, c) =>
           School(t, Cons(Course(name), Nil()))
-      def teacherByName(name: String): Optional[Teacher] = ???
-      def courseByName(name: String): Optional[Course] = ???
-      def nameOfTeacher(teacher: Teacher): String = ???
-      def nameOfCourse(teacher: Teacher): String = ???
+      def teacherByName(name: String): Optional[Teacher] = school match
+        case School(t, _) =>
+          t match
+            case Cons(n, c) if name.equals(n.name) => Just(n)
+            case _                                 => Empty()
+
+      def courseByName(name: String): Optional[Course] = school match
+        case School(_, c) =>
+          c match
+            case Cons(n, _) if n.name.equals(name) => Just(n)
+            case _                                 => Empty()
+
+      def nameOfTeacher(teacher: Teacher): String = teacher.name
+      def nameOfCourse(course: Course): String = course.name
       def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
