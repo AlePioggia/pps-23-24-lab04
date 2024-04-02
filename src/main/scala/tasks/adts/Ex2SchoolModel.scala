@@ -55,12 +55,10 @@ object SchoolModel:
           c match
             case Cons(n, _) if n.name.equals(name) => Just(n)
             case _                                 => Empty()
-
       def nameOfTeacher(teacher: Teacher): String = teacher.name
       def nameOfCourse(course: Course): String = course.name
       def setTeacherToCourse(teacher: Teacher, course: Course): School =
         school match
           case School(t, c) => School(t, Cons(course, c))
-
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
         teacher.courses
