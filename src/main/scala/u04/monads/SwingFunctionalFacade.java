@@ -1,6 +1,9 @@
 package u04.monads;
 
 import javax.swing.*;
+
+import org.junit.platform.console.shadow.picocli.CommandLine.Help.Ansi.Text;
+
 import java.awt.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -10,35 +13,46 @@ class SwingFunctionalFacade {
 
     public static interface Frame {
         Frame setSize(int width, int height);
+
         Frame addButton(String text, String name);
+
         Frame addLabel(String text, String name);
+
+        Frame addOkButton(String text, String name);
+
         Frame showToLabel(String text, String name);
+
+        Frame addTextField();
+
         Frame show();
-        Supplier<String> events();        
+
+        Supplier<String> events();
     }
 
-    public static Frame createFrame(){
+    public static Frame createFrame() {
         return new FrameImpl();
     }
 
     /*
-    private static class FrameImpl implements Frame {
-      ...
-    }
-    */
+     * private static class FrameImpl implements Frame {
+     * ...
+     * }
+     */
 
     private static class FrameImpl implements Frame {
         private final JFrame jframe = new JFrame();
         private final Map<String, JButton> buttons = new HashMap<>();
         private final Map<String, JLabel> labels = new HashMap<>();
+        private JTextField textField = new JTextField();
         private final LinkedBlockingQueue<String> eventQueue = new LinkedBlockingQueue<>();
         private final Supplier<String> events = () -> {
-            try{
+            try {
                 return eventQueue.take();
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 return "";
             }
         };
+
         public FrameImpl() {
             this.jframe.setLayout(new FlowLayout());
         }
@@ -57,7 +71,8 @@ class SwingFunctionalFacade {
             jb.addActionListener(e -> {
                 try {
                     eventQueue.put(name);
-                } catch (InterruptedException ex){}
+                } catch (InterruptedException ex) {
+                }
             });
             this.jframe.getContentPane().add(jb);
             return this;
@@ -85,6 +100,30 @@ class SwingFunctionalFacade {
         @Override
         public Frame show() {
             this.jframe.setVisible(true);
+            return this;
+        }
+
+        @Override
+        public Frame addTextField() {
+            this.textField = new JTextField();
+            this.textField.setColumns(10);
+            this.jframe.getContentPane().add(this.textField);
+            return this;
+        }
+
+        @Override
+        public Frame addOkButton(String text, String name) {
+            JButton jb = new JButton(text);
+            jb.setActionCommand(name);
+            this.buttons.put(name, jb);
+            jb.addActionListener(e -> {
+                try {
+                    String result = this.textField.getText();
+                    eventQueue.put(result);
+                } catch (Exception ex) {
+                }
+            });
+            this.jframe.getContentPane().add(jb);
             return this;
         }
 

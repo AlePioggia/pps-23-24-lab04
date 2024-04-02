@@ -7,18 +7,20 @@ trait CounterState:
   def initialCounter(): Counter
   def inc(): State[Counter, Unit]
   def dec(): State[Counter, Unit]
+  def set(value: Int): State[Counter, Unit]
   def reset(): State[Counter, Unit]
   def get(): State[Counter, Int]
   def nop(): State[Counter, Unit]
 
 object CounterStateImpl extends CounterState:
   opaque type Counter = Int
-  
+
   def initialCounter(): Counter = 0
 
   // giving (new_counter, result)
   def inc(): State[Counter, Unit] = State(i => (i + 1, ()));
   def dec(): State[Counter, Unit] = State(i => (i - 1, ()));
+  def set(value: Int): State[Counter, Unit] = State(i => (value, ()));
   def reset(): State[Counter, Unit] = State(i => (0, ()));
   def get(): State[Counter, Int] = State(i => (i, i));
   def nop(): State[Counter, Unit] = State(i => (i, ()));
@@ -26,7 +28,7 @@ object CounterStateImpl extends CounterState:
 @main def tryCounterState =
   import Monads.*, Monad.*, States.{*, given}, State.*
   val counterState: CounterState = CounterStateImpl
-  import counterState.*  // or directly, import CounterStateImpl.*
+  import counterState.* // or directly, import CounterStateImpl.*
 
   println:
     inc().run(initialCounter()) // ((),  1)
@@ -40,10 +42,10 @@ object CounterStateImpl extends CounterState:
       for
         _ <- increment(n - 1)
         _ <- inc()
-      yield ()  
+      yield ()
 
   val session: State[Counter, Int] =
-    for 
+    for
       _ <- inc()
       _ <- reset()
       _ <- increment(5)
@@ -52,4 +54,4 @@ object CounterStateImpl extends CounterState:
     yield v
 
   println:
-    session.run(initialCounter())  // (5, 0)  
+    session.run(initialCounter()) // (5, 0)

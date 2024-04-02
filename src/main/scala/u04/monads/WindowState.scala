@@ -2,52 +2,59 @@ package u04.monads
 
 import Monads.*, Monad.*, States.*, State.*
 import u03.extensionmethods.Streams.*
+import u04.monads.SwingFunctionalFacade.Frame
 
 trait WindowState:
   type Window
   def initialWindow: Window
   def setSize(width: Int, height: Int): State[Window, Unit]
   def addButton(text: String, name: String): State[Window, Unit]
+  def addOkButton(text: String, name: String): State[Window, Unit]
   def addLabel(text: String, name: String): State[Window, Unit]
+  def addTextField(): State[Window, Unit]
   def toLabel(text: String, name: String): State[Window, Unit]
   def show(): State[Window, Unit]
-  def exec(cmd: =>Unit): State[Window, Unit]
+  def exec(cmd: => Unit): State[Window, Unit]
   def eventStream(): State[Window, Stream[String]]
 
 object WindowStateImpl extends WindowState:
   import SwingFunctionalFacade.*
-  
+
   type Window = Frame
-  
-  
+
   def initialWindow: Window = createFrame
 
-  def setSize(width: Int, height: Int): State[Window, Unit] = 
+  def setSize(width: Int, height: Int): State[Window, Unit] =
     State(w => ((w.setSize(width, height)), {}))
   def addButton(text: String, name: String): State[Window, Unit] =
     State(w => ((w.addButton(text, name)), {}))
+  def addOkButton(text: String, name: String): State[Frame, Unit] =
+    State(w => (w.addOkButton(text, name), {}))
   def addLabel(text: String, name: String): State[Window, Unit] =
     State(w => ((w.addLabel(text, name)), {}))
+  def addTextField(): State[Frame, Unit] =
+    State(w => (w.addTextField, {}))
   def toLabel(text: String, name: String): State[Window, Unit] =
     State(w => ((w.showToLabel(text, name)), {}))
   def show(): State[Window, Unit] =
     State(w => (w.show, {}))
-  def exec(cmd: =>Unit): State[Window, Unit] =
-    State(w => (w, cmd))  
+  def exec(cmd: => Unit): State[Window, Unit] =
+    State(w => (w, cmd))
   def eventStream(): State[Window, Stream[String]] =
     State(w => (w, Stream.generate(() => w.events().get)))
-  
 @main def windowStateExample =
   import u04.*
   import WindowStateImpl.*
   import u03.extensionmethods.Streams.*
 
-  val windowCreation = for 
+  val windowCreation = for
     _ <- setSize(300, 300)
     _ <- addButton(text = "inc", name = "IncButton")
     _ <- addButton(text = "dec", name = "DecButton")
     _ <- addButton(text = "quit", name = "QuitButton")
     _ <- addLabel(text = "-", name = "Label1")
+    _ <- addOkButton(text = "ok", name = "OkButton")
+    _ <- addTextField()
     _ <- show()
     e <- eventStream()
   yield e
@@ -56,9 +63,10 @@ object WindowStateImpl extends WindowState:
     _ <- windowCreation
     e <- eventStream()
     _ <- seqN(e.map(_ match
-        case "IncButton" => toLabel("i", "Label1")
-        case "DecButton" => toLabel("d", "Label1")
-        case "QuitButton" => exec(sys.exit())))
+      case "IncButton"  => toLabel("i", "Label1")
+      case "DecButton"  => toLabel("d", "Label1")
+      case "QuitButton" => exec(sys.exit())
+    ))
   yield ()
 
   windowEventsHandling.run(initialWindow)
