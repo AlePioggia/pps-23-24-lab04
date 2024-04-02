@@ -29,10 +29,8 @@ object Ex1ComplexNumbers:
       def im(): Double = complex.im
       def sum(other: Complex): Complex = other match
         case Complex(re, im) => Complex(complex.re + re, complex.im + im)
-
       def subtract(other: Complex): Complex = other match
         case Complex(re, im) => Complex(complex.re - re, complex.im - im)
-
       def asString(): String = complex match
         case Complex(re, im) if im > 0 =>
           re.toString().concat(" + ".concat(im.toString().concat("i")))
@@ -74,7 +72,6 @@ object SchoolModel:
           t match
             case Cons(n, c) if name.equals(n.name) => Just(n)
             case _                                 => Empty()
-
       def courseByName(name: String): Optional[Course] = school match
         case School(_, c) =>
           c match
