@@ -7,6 +7,8 @@ enum CurrentGameState {
   case Playing, Won, Lost, Standby
 }
 
+val GAME_OVER_VALUE: Int = -1
+
 case class GameStateData(
     secret: Int,
     attempts: Int,
@@ -54,8 +56,11 @@ object DrawMyNumberStateImpl extends DrawMyNumberState:
       State(g => {
         val newGameState = g.copy(attempts = g.attempts - 1)
         val newState = newGameState match
-          case GameStateData(_, 0, _) => CurrentGameState.Lost
-          case GameStateData(secret, _, _) if secret == n =>
+          case GameStateData(secret, attempts, _)
+              if attempts <= GAME_OVER_VALUE =>
+            CurrentGameState.Lost
+          case GameStateData(secret, attempts, _)
+              if secret == n && attempts >= GAME_OVER_VALUE =>
             CurrentGameState.Won
           case _ => CurrentGameState.Playing
         (newGameState.copy(currentState = newState), ())
@@ -74,7 +79,8 @@ object DrawMyNumberStateImpl extends DrawMyNumberState:
       _ <- guessNumber(5)
       _ <- guessNumber(4)
       _ <- guessNumber(3)
-      _ <- guessNumber(2)
+      _ <- guessNumber(1)
+      _ <- guessNumber(0)
       _ <- guessNumber(0)
       v <- getGameState()
     yield v

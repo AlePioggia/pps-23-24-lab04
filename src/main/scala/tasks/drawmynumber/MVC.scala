@@ -10,6 +10,7 @@ import tasks.drawmynumber.DrawMyNumberStateImpl.getGameState
 import tasks.drawmynumber.DrawMyNumberStateImpl.initialGameState
 import tasks.drawmynumber.DrawMyNumberStateImpl.guessNumber
 import tasks.drawmynumber.DrawMyNumberStateImpl.startNewTrialGame
+import tasks.drawmynumber.DrawMyNumberStateImpl.nop
 
 @main def runMVC =
   def mv[SM, SV, AM, AV](
@@ -44,4 +45,4 @@ import tasks.drawmynumber.DrawMyNumberStateImpl.startNewTrialGame
     ))
   yield ()
 
-  controller.run(initialGameState(), initialWindow)
+  controller.run((initialGameState(), initialWindow))
